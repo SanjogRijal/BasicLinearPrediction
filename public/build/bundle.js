@@ -51,6 +51,12 @@ var app = (function () {
     function detach(node) {
         node.parentNode.removeChild(node);
     }
+    function destroy_each(iterations, detaching) {
+        for (let i = 0; i < iterations.length; i += 1) {
+            if (iterations[i])
+                iterations[i].d(detaching);
+        }
+    }
     function element(name) {
         return document.createElement(name);
     }
@@ -166,27 +172,10 @@ var app = (function () {
         }
     }
     const outroing = new Set();
-    let outros;
     function transition_in(block, local) {
         if (block && block.i) {
             outroing.delete(block);
             block.i(local);
-        }
-    }
-    function transition_out(block, local, detach, callback) {
-        if (block && block.o) {
-            if (outroing.has(block))
-                return;
-            outroing.add(block);
-            outros.c.push(() => {
-                outroing.delete(block);
-                if (callback) {
-                    if (detach)
-                        block.d(1);
-                    callback();
-                }
-            });
-            block.o(local);
         }
     }
 
@@ -195,9 +184,6 @@ var app = (function () {
         : typeof globalThis !== 'undefined'
             ? globalThis
             : global);
-    function create_component(block) {
-        block && block.c();
-    }
     function mount_component(component, target, anchor, customElement) {
         const { fragment, on_mount, on_destroy, after_update } = component.$$;
         fragment && fragment.m(target, anchor);
@@ -365,6 +351,15 @@ var app = (function () {
             return;
         dispatch_dev('SvelteDOMSetData', { node: text, data });
         text.data = data;
+    }
+    function validate_each_argument(arg) {
+        if (typeof arg !== 'string' && !(arg && typeof arg === 'object' && 'length' in arg)) {
+            let msg = '{#each} only iterates over array-like objects.';
+            if (typeof Symbol === 'function' && arg && Symbol.iterator in arg) {
+                msg += ' You can use a spread to convert this iterable into an array.';
+            }
+            throw new Error(msg);
+        }
     }
     function validate_slots(name, slot, keys) {
         for (const slot_key of Object.keys(slot)) {
@@ -10291,7 +10286,7 @@ var app = (function () {
 
     /** @license See the LICENSE file. */
     // This code is auto-generated, do not modify this file!
-    const version$7 = '3.12.0';
+    const version$8 = '3.12.0';
 
     /**
      * @license
@@ -26067,9 +26062,6 @@ var app = (function () {
      * limitations under the License.
      * =============================================================================
      */
-    // tslint:disable-next-line:no-unused-expression
-    [MomentumOptimizer, SGDOptimizer, AdadeltaOptimizer, AdagradOptimizer,
-        RMSPropOptimizer, AdamaxOptimizer, AdamOptimizer];
     const train = {
         sgd: OptimizerConstructors.sgd,
         momentum: OptimizerConstructors.momentum,
@@ -27149,6 +27141,471 @@ var app = (function () {
         nonMaxSuppressionV4Impl: nonMaxSuppressionV4Impl$2,
         nonMaxSuppressionV5Impl: nonMaxSuppressionV5Impl$2,
         whereImpl: whereImpl$2
+    });
+
+    /**
+     * @license
+     * Copyright 2017 Google LLC. All Rights Reserved.
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     * http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     * =============================================================================
+     */
+
+    var tf$1 = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        AdadeltaOptimizer: AdadeltaOptimizer,
+        AdagradOptimizer: AdagradOptimizer,
+        AdamOptimizer: AdamOptimizer,
+        AdamaxOptimizer: AdamaxOptimizer,
+        MomentumOptimizer: MomentumOptimizer,
+        Optimizer: Optimizer,
+        OptimizerConstructors: OptimizerConstructors,
+        RMSPropOptimizer: RMSPropOptimizer,
+        SGDOptimizer: SGDOptimizer,
+        Tensor: Tensor,
+        TensorBuffer: TensorBuffer,
+        Variable: Variable,
+        get Rank () { return Rank; },
+        sumOutType: sumOutType,
+        upcastType: upcastType,
+        get Reduction () { return Reduction; },
+        customGrad: customGrad,
+        grad: grad,
+        grads: grads,
+        valueAndGrad: valueAndGrad,
+        valueAndGrads: valueAndGrads,
+        variableGrads: variableGrads,
+        Environment: Environment,
+        env: env,
+        get ENV () { return ENV$3; },
+        nextFrame: nextFrame,
+        KernelBackend: KernelBackend,
+        DataStorage: DataStorage,
+        abs: abs$2,
+        acos: acos$2,
+        acosh: acosh$2,
+        add: add$2,
+        addN: addN$2,
+        all: all$2,
+        any: any$2,
+        argMax: argMax$2,
+        argMin: argMin$2,
+        asin: asin$2,
+        asinh: asinh$2,
+        atan: atan$2,
+        atan2: atan2$2,
+        atanh: atanh$2,
+        avgPool: avgPool$2,
+        avgPool3d: avgPool3d$1,
+        basicLSTMCell: basicLSTMCell,
+        batchToSpaceND: batchToSpaceND$2,
+        batchNorm: batchNorm$2,
+        batchNorm2d: batchNorm2d,
+        batchNorm3d: batchNorm3d,
+        batchNorm4d: batchNorm4d,
+        bincount: bincount$2,
+        broadcastArgs: broadcastArgs$2,
+        broadcastTo: broadcastTo,
+        buffer: buffer,
+        cast: cast$3,
+        ceil: ceil$2,
+        clipByValue: clipByValue$1,
+        clone: clone,
+        complex: complex$2,
+        concat: concat$2,
+        concat1d: concat1d,
+        concat2d: concat2d,
+        concat3d: concat3d,
+        concat4d: concat4d,
+        conv1d: conv1d$1,
+        conv2d: conv2d$3,
+        conv2dTranspose: conv2dTranspose$1,
+        conv3d: conv3d$1,
+        conv3dTranspose: conv3dTranspose$1,
+        cos: cos$2,
+        cosh: cosh$2,
+        cumsum: cumsum$2,
+        denseBincount: denseBincount$2,
+        depthToSpace: depthToSpace$2,
+        depthwiseConv2d: depthwiseConv2d$3,
+        diag: diag$2,
+        dilation2d: dilation2d,
+        div: div$1,
+        divNoNan: divNoNan,
+        dot: dot$2,
+        einsum: einsum$2,
+        elu: elu$4,
+        equal: equal$2,
+        erf: erf$2,
+        exp: exp$2,
+        expandDims: expandDims$3,
+        expm1: expm1$2,
+        eye: eye,
+        fill: fill$2,
+        floor: floor$2,
+        floorDiv: floorDiv$2,
+        gather: gather$1,
+        greater: greater$3,
+        greaterEqual: greaterEqual$2,
+        imag: imag$2,
+        isFinite: isFinite$3,
+        isInf: isInf$2,
+        isNaN: isNaN$3,
+        leakyRelu: leakyRelu$2,
+        less: less$3,
+        lessEqual: lessEqual$2,
+        linspace: linspace,
+        localResponseNormalization: localResponseNormalization,
+        log: log$2,
+        log1p: log1p$2,
+        logSigmoid: logSigmoid,
+        logSoftmax: logSoftmax,
+        logSumExp: logSumExp,
+        logicalAnd: logicalAnd$2,
+        logicalNot: logicalNot$2,
+        logicalOr: logicalOr$2,
+        logicalXor: logicalXor,
+        matMul: matMul$1,
+        max: max$3,
+        maxPool: maxPool$2,
+        maxPool3d: maxPool3d$1,
+        maxPoolWithArgmax: maxPoolWithArgmax,
+        maximum: maximum$3,
+        mean: mean$1,
+        meshgrid: meshgrid,
+        min: min$3,
+        minimum: minimum$3,
+        mirrorPad: mirrorPad$1,
+        mod: mod$2,
+        moments: moments,
+        mul: mul,
+        multiRNNCell: multiRNNCell,
+        multinomial: multinomial$2,
+        neg: neg$2,
+        notEqual: notEqual$2,
+        oneHot: oneHot$2,
+        ones: ones$1,
+        onesLike: onesLike$2,
+        outerProduct: outerProduct,
+        pad: pad,
+        pad1d: pad1d,
+        pad2d: pad2d,
+        pad3d: pad3d,
+        pad4d: pad4d,
+        pool: pool$1,
+        pow: pow$2,
+        prelu: prelu$3,
+        print: print,
+        prod: prod$2,
+        rand: rand,
+        randomGamma: randomGamma,
+        randomNormal: randomNormal$2,
+        randomUniform: randomUniform$1,
+        range: range$3,
+        real: real$2,
+        reciprocal: reciprocal$2,
+        relu: relu$2,
+        relu6: relu6$2,
+        reshape: reshape$3,
+        reverse: reverse$2,
+        reverse1d: reverse1d,
+        reverse2d: reverse2d,
+        reverse3d: reverse3d,
+        reverse4d: reverse4d,
+        round: round$2,
+        rsqrt: rsqrt$2,
+        scalar: scalar,
+        selu: selu$2,
+        separableConv2d: separableConv2d$1,
+        setdiff1dAsync: setdiff1dAsync,
+        sigmoid: sigmoid$2,
+        sign: sign$2,
+        sin: sin$2,
+        sinh: sinh$2,
+        slice: slice$2,
+        slice1d: slice1d,
+        slice2d: slice2d,
+        slice3d: slice3d,
+        slice4d: slice4d,
+        softmax: softmax$3,
+        softplus: softplus$2,
+        spaceToBatchND: spaceToBatchND$2,
+        fft: fft$2,
+        ifft: ifft$2,
+        irfft: irfft,
+        rfft: rfft,
+        split: split$2,
+        sqrt: sqrt$2,
+        square: square$2,
+        squaredDifference: squaredDifference$2,
+        squeeze: squeeze,
+        stack: stack,
+        step: step$2,
+        stridedSlice: stridedSlice$2,
+        sub: sub$2,
+        sum: sum$2,
+        tan: tan$2,
+        tanh: tanh$2,
+        tensor: tensor,
+        tensor1d: tensor1d,
+        tensor2d: tensor2d,
+        tensor3d: tensor3d,
+        tensor4d: tensor4d,
+        tensor5d: tensor5d,
+        tensor6d: tensor6d,
+        tile: tile$3,
+        topk: topk,
+        truncatedNormal: truncatedNormal$1,
+        unique: unique$3,
+        unsortedSegmentSum: unsortedSegmentSum$2,
+        unstack: unstack,
+        variable: variable,
+        where: where,
+        whereAsync: whereAsync,
+        zeros: zeros$2,
+        zerosLike: zerosLike$2,
+        op: op,
+        OP_SCOPE_SUFFIX: OP_SCOPE_SUFFIX,
+        booleanMaskAsync: booleanMaskAsync,
+        transpose: transpose$2,
+        norm: norm,
+        movingAverage: movingAverage,
+        scatterND: scatterND,
+        sparseToDense: sparseToDense$2,
+        gatherND: gatherND,
+        dropout: dropout$2,
+        enclosingPowerOfTwo: enclosingPowerOfTwo,
+        cosineWindow: cosineWindow,
+        inTopKAsync: inTopKAsync,
+        image: image$1,
+        linalg: linalg,
+        losses: losses,
+        spectral: spectral$1,
+        fused: fused_ops,
+        signal: signal,
+        sparse: sparse$1,
+        string: string$1,
+        train: train,
+        enableProdMode: enableProdMode,
+        enableDebugMode: enableDebugMode,
+        disableDeprecationWarnings: disableDeprecationWarnings,
+        deprecationWarn: deprecationWarn,
+        disposeVariables: disposeVariables,
+        engine: engine,
+        memory: memory,
+        profile: profile,
+        tidy: tidy,
+        dispose: dispose,
+        keep: keep,
+        time: time,
+        setBackend: setBackend,
+        ready: ready,
+        getBackend: getBackend,
+        removeBackend: removeBackend,
+        findBackend: findBackend,
+        findBackendFactory: findBackendFactory,
+        registerBackend: registerBackend,
+        backend: backend,
+        setPlatform: setPlatform,
+        getKernel: getKernel,
+        getGradient: getGradient,
+        getKernelsForBackend: getKernelsForBackend,
+        registerKernel: registerKernel,
+        registerGradient: registerGradient,
+        unregisterKernel: unregisterKernel,
+        unregisterGradient: unregisterGradient,
+        copyRegisteredKernels: copyRegisteredKernels,
+        Abs: Abs,
+        Acos: Acos,
+        Acosh: Acosh,
+        Add: Add$1,
+        AddN: AddN,
+        All: All,
+        Any: Any,
+        ArgMax: ArgMax,
+        ArgMin: ArgMin,
+        Asin: Asin,
+        Asinh: Asinh,
+        Atan: Atan,
+        Atanh: Atanh,
+        Atan2: Atan2,
+        AvgPool: AvgPool,
+        AvgPoolGrad: AvgPoolGrad,
+        AvgPool3D: AvgPool3D,
+        AvgPool3DGrad: AvgPool3DGrad,
+        BatchMatMul: BatchMatMul,
+        BatchToSpaceND: BatchToSpaceND,
+        Bincount: Bincount,
+        BroadcastTo: BroadcastTo,
+        BroadcastArgs: BroadcastArgs,
+        Cast: Cast,
+        Ceil: Ceil,
+        ClipByValue: ClipByValue,
+        Complex: Complex,
+        ComplexAbs: ComplexAbs,
+        Concat: Concat,
+        Conv2D: Conv2D$1,
+        Conv2DBackpropFilter: Conv2DBackpropFilter,
+        Conv2DBackpropInput: Conv2DBackpropInput,
+        Conv3D: Conv3D$1,
+        Conv3DBackpropFilterV2: Conv3DBackpropFilterV2,
+        Conv3DBackpropInputV2: Conv3DBackpropInputV2,
+        Cos: Cos,
+        Cosh: Cosh,
+        Cumsum: Cumsum,
+        CropAndResize: CropAndResize,
+        DenseBincount: DenseBincount,
+        DepthToSpace: DepthToSpace,
+        DepthwiseConv2dNative: DepthwiseConv2dNative,
+        DepthwiseConv2dNativeBackpropFilter: DepthwiseConv2dNativeBackpropFilter,
+        DepthwiseConv2dNativeBackpropInput: DepthwiseConv2dNativeBackpropInput,
+        Diag: Diag,
+        Dilation2D: Dilation2D,
+        Dilation2DBackpropInput: Dilation2DBackpropInput,
+        Dilation2DBackpropFilter: Dilation2DBackpropFilter,
+        RealDiv: RealDiv,
+        Einsum: Einsum,
+        Elu: Elu$1,
+        EluGrad: EluGrad,
+        Erf: Erf,
+        Equal: Equal,
+        Exp: Exp,
+        ExpandDims: ExpandDims,
+        Expm1: Expm1,
+        FFT: FFT,
+        Fill: Fill,
+        FlipLeftRight: FlipLeftRight,
+        Floor: Floor,
+        FloorDiv: FloorDiv,
+        FusedBatchNorm: FusedBatchNorm,
+        GatherV2: GatherV2,
+        GatherNd: GatherNd,
+        Greater: Greater,
+        GreaterEqual: GreaterEqual,
+        Identity: Identity$1,
+        IFFT: IFFT,
+        Imag: Imag,
+        IsFinite: IsFinite,
+        IsInf: IsInf,
+        IsNan: IsNan,
+        LeakyRelu: LeakyRelu,
+        Less: Less,
+        LessEqual: LessEqual,
+        LinSpace: LinSpace,
+        Log: Log,
+        Log1p: Log1p,
+        LogicalAnd: LogicalAnd,
+        LogicalNot: LogicalNot,
+        LogicalOr: LogicalOr,
+        LogSoftmax: LogSoftmax$1,
+        LRN: LRN,
+        LRNGrad: LRNGrad,
+        Max: Max,
+        Maximum: Maximum$1,
+        MaxPool: MaxPool,
+        MaxPoolGrad: MaxPoolGrad,
+        MaxPool3D: MaxPool3D,
+        MaxPool3DGrad: MaxPool3DGrad,
+        MaxPoolWithArgmax: MaxPoolWithArgmax,
+        Mean: Mean,
+        Min: Min,
+        Minimum: Minimum$1,
+        MirrorPad: MirrorPad,
+        Mod: Mod,
+        Multinomial: Multinomial,
+        Multiply: Multiply$1,
+        Neg: Neg,
+        NotEqual: NotEqual,
+        NonMaxSuppressionV3: NonMaxSuppressionV3,
+        NonMaxSuppressionV4: NonMaxSuppressionV4,
+        NonMaxSuppressionV5: NonMaxSuppressionV5,
+        OnesLike: OnesLike,
+        OneHot: OneHot,
+        Pack: Pack,
+        PadV2: PadV2,
+        Pool: Pool,
+        Pow: Pow,
+        Prelu: Prelu,
+        Prod: Prod,
+        Range: Range,
+        Real: Real,
+        Reciprocal: Reciprocal,
+        Relu: Relu$1,
+        Reshape: Reshape$1,
+        ResizeNearestNeighbor: ResizeNearestNeighbor,
+        ResizeNearestNeighborGrad: ResizeNearestNeighborGrad,
+        ResizeBilinear: ResizeBilinear,
+        ResizeBilinearGrad: ResizeBilinearGrad,
+        Relu6: Relu6$1,
+        Reverse: Reverse,
+        Round: Round,
+        Rsqrt: Rsqrt,
+        ScatterNd: ScatterNd,
+        Select: Select,
+        Selu: Selu$1,
+        Slice: Slice,
+        Sin: Sin,
+        Sinh: Sinh,
+        Sign: Sign,
+        Sigmoid: Sigmoid$1,
+        Softplus: Softplus$1,
+        Sqrt: Sqrt,
+        Sum: Sum,
+        SpaceToBatchND: SpaceToBatchND,
+        SplitV: SplitV,
+        Softmax: Softmax$2,
+        SparseFillEmptyRows: SparseFillEmptyRows,
+        SparseReshape: SparseReshape,
+        SparseSegmentMean: SparseSegmentMean,
+        SparseSegmentSum: SparseSegmentSum,
+        SparseToDense: SparseToDense,
+        SquaredDifference: SquaredDifference,
+        Square: Square,
+        StridedSlice: StridedSlice,
+        StringNGrams: StringNGrams,
+        StringSplit: StringSplit,
+        StringToHashBucketFast: StringToHashBucketFast,
+        Sub: Sub,
+        Tan: Tan,
+        Tanh: Tanh$1,
+        Tile: Tile,
+        TopK: TopK,
+        Transform: Transform,
+        Transpose: Transpose,
+        Unique: Unique,
+        Unpack: Unpack,
+        UnsortedSegmentSum: UnsortedSegmentSum,
+        ZerosLike: ZerosLike,
+        Step: Step,
+        FromPixels: FromPixels,
+        RotateWithOffset: RotateWithOffset,
+        _FusedMatMul: _FusedMatMul,
+        FusedConv2D: FusedConv2D,
+        FusedDepthwiseConv2D: FusedDepthwiseConv2D,
+        version_core: version$8,
+        browser: browser,
+        io: io,
+        math: math,
+        serialization: serialization,
+        test_util: test_util,
+        util: util,
+        backend_util: backend_util,
+        broadcast_util: broadcast_util,
+        tensor_util: tensor_util,
+        slice_util: slice_util,
+        gather_util: gather_nd_util,
+        scatter_util: scatter_nd_util,
+        device_util: device_util,
+        kernel_impls: kernel_impls
     });
 
     /**
@@ -38747,7 +39204,7 @@ var app = (function () {
 
     /** @license See the LICENSE file. */
     // This code is auto-generated, do not modify this file!
-    const version$6 = '3.12.0';
+    const version$7 = '3.12.0';
 
     /**
      * @license
@@ -39707,7 +40164,7 @@ var app = (function () {
             const modelConfig = {};
             modelConfig['className'] = this.getClassName();
             modelConfig['config'] = theConfig;
-            modelConfig['kerasVersion'] = `tfjs-layers ${version$6}`;
+            modelConfig['kerasVersion'] = `tfjs-layers ${version$7}`;
             // TODO(nielsene): Replace something like K.backend() once
             // possible.
             modelConfig['backend'] = 'TensorFlow.js';
@@ -42760,7 +43217,7 @@ var app = (function () {
             const modelArtifacts = {
                 modelTopology: modelConfig,
                 format: LAYERS_MODEL_FORMAT_NAME,
-                generatedBy: `TensorFlow.js tfjs-layers v${version$6}`,
+                generatedBy: `TensorFlow.js tfjs-layers v${version$7}`,
                 convertedBy: null,
             };
             const includeOptimizer = config == null ? false : config.includeOptimizer;
@@ -63092,7 +63549,7 @@ var app = (function () {
 
     /** @license See the LICENSE file. */
     // This code is auto-generated, do not modify this file!
-    const version$5 = '3.12.0';
+    const version$6 = '3.12.0';
 
     /**
      * @license
@@ -66787,7 +67244,7 @@ var app = (function () {
 
     /** @license See the LICENSE file. */
     // This code is auto-generated, do not modify this file!
-    const version$4 = '3.12.0';
+    const version$5 = '3.12.0';
 
     /**
      * @license
@@ -66820,7 +67277,7 @@ var app = (function () {
         webcam: webcam,
         FileDataSource: FileDataSource,
         URLDataSource: URLDataSource,
-        version_data: version$4
+        version_data: version$5
     });
 
     /**
@@ -69537,7 +69994,7 @@ var app = (function () {
 
     /** @license See the LICENSE file. */
     // This code is auto-generated, do not modify this file!
-    const version$3 = '3.12.0';
+    const version$4 = '3.12.0';
 
     /**
      * @license
@@ -82458,7 +82915,7 @@ vec2 packedUVfrom3D(int texNumR, int texNumC,
 
     /** @license See the LICENSE file. */
     // This code is auto-generated, do not modify this file!
-    const version$2 = '3.12.0';
+    const version$3 = '3.12.0';
 
     /**
      * @license
@@ -96146,7 +96603,7 @@ return a / b;`;
 
     /** @license See the LICENSE file. */
     // This code is auto-generated, do not modify this file!
-    const version$1 = '3.12.0';
+    const version$2 = '3.12.0';
 
     /**
      * @license
@@ -96164,20 +96621,20 @@ return a / b;`;
      * limitations under the License.
      * =============================================================================
      */
-    const version = {
-        'tfjs-core': version$7,
-        'tfjs-backend-cpu': version$3,
-        'tfjs-backend-webgl': version$2,
-        'tfjs-data': version$4,
-        'tfjs-layers': version$6,
-        'tfjs-converter': version$5,
-        'tfjs': version$1
+    const version$1 = {
+        'tfjs-core': version$8,
+        'tfjs-backend-cpu': version$4,
+        'tfjs-backend-webgl': version$3,
+        'tfjs-data': version$5,
+        'tfjs-layers': version$7,
+        'tfjs-converter': version$6,
+        'tfjs': version$2
     };
 
     var tf = /*#__PURE__*/Object.freeze({
         __proto__: null,
         data: index,
-        version: version,
+        version: version$1,
         AdadeltaOptimizer: AdadeltaOptimizer,
         AdagradOptimizer: AdagradOptimizer,
         AdamOptimizer: AdamOptimizer,
@@ -96607,7 +97064,7 @@ return a / b;`;
         _FusedMatMul: _FusedMatMul,
         FusedConv2D: FusedConv2D,
         FusedDepthwiseConv2D: FusedDepthwiseConv2D,
-        version_core: version$7,
+        version_core: version$8,
         browser: browser,
         io: io,
         math: math,
@@ -96639,7 +97096,7 @@ return a / b;`;
         RNN: RNN,
         Sequential: Sequential,
         LayerVariable: LayerVariable,
-        version_layers: version$6,
+        version_layers: version$7,
         constraints: exports_constraints,
         initializers: exports_initializers,
         layers: exports_layers,
@@ -96650,16 +97107,17 @@ return a / b;`;
         loadGraphModel: loadGraphModel,
         deregisterOp: deregisterOp,
         registerOp: registerOp,
-        version_converter: version$5
+        version_converter: version$6
     });
 
     /* src/Components/tensorflow.svelte generated by Svelte v3.44.3 */
 
-    const { console: console_1 } = globals;
-    const file$1 = "src/Components/tensorflow.svelte";
+    const { console: console_1$1 } = globals;
+    const file$2 = "src/Components/tensorflow.svelte";
 
-    function create_fragment$1(ctx) {
+    function create_fragment$2(ctx) {
     	let section;
+    	let div;
     	let h4;
     	let t0;
     	let t1;
@@ -96671,26 +97129,30 @@ return a / b;`;
     	const block = {
     		c: function create() {
     			section = element("section");
+    			div = element("div");
     			h4 = element("h4");
     			t0 = text("Predicted Value: ");
     			t1 = text(/*prediction*/ ctx[0]);
     			t2 = space();
     			input = element("input");
-    			add_location(h4, file$1, 29, 4, 961);
+    			add_location(h4, file$2, 38, 8, 1107);
     			attr_dev(input, "type", "number");
-    			add_location(input, file$1, 31, 4, 1005);
-    			add_location(section, file$1, 28, 0, 947);
+    			add_location(input, file$2, 40, 4, 1151);
+    			attr_dev(div, "class", "tensorSection svelte-555pko");
+    			add_location(div, file$2, 37, 4, 1071);
+    			add_location(section, file$2, 36, 0, 1057);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, section, anchor);
-    			append_dev(section, h4);
+    			append_dev(section, div);
+    			append_dev(div, h4);
     			append_dev(h4, t0);
     			append_dev(h4, t1);
-    			append_dev(section, t2);
-    			append_dev(section, input);
+    			append_dev(div, t2);
+    			append_dev(div, input);
 
     			if (!mounted) {
     				dispose = listen_dev(input, "change", /*linearPrediction*/ ctx[1], false, false, false);
@@ -96711,7 +97173,7 @@ return a / b;`;
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_fragment$1.name,
+    		id: create_fragment$2.name,
     		type: "component",
     		source: "",
     		ctx
@@ -96720,7 +97182,7 @@ return a / b;`;
     	return block;
     }
 
-    function instance$1($$self, $$props, $$invalidate) {
+    function instance$2($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('Tensorflow', slots, []);
     	let linearModel;
@@ -96756,7 +97218,7 @@ return a / b;`;
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console_1.warn(`<Tensorflow> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console_1$1.warn(`<Tensorflow> was created with unknown prop '${key}'`);
     	});
 
     	$$self.$capture_state = () => ({
@@ -96783,58 +97245,50 @@ return a / b;`;
     class Tensorflow extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$1, create_fragment$1, safe_not_equal, {});
+    		init(this, options, instance$2, create_fragment$2, safe_not_equal, {});
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "Tensorflow",
     			options,
-    			id: create_fragment$1.name
+    			id: create_fragment$2.name
     		});
     	}
     }
 
     /* src/App.svelte generated by Svelte v3.44.3 */
-    const file = "src/App.svelte";
+    const file$1 = "src/App.svelte";
 
-    function create_fragment(ctx) {
+    function create_fragment$1(ctx) {
     	let main;
     	let h1;
     	let t0;
     	let t1;
     	let t2;
     	let t3;
-    	let p;
-    	let t4;
-    	let a;
-    	let t6;
-    	let t7;
-    	let tensorflow;
-    	let current;
-    	tensorflow = new Tensorflow({ $$inline: true });
+    	let p0;
+    	let t5;
+    	let p1;
 
     	const block = {
     		c: function create() {
     			main = element("main");
     			h1 = element("h1");
-    			t0 = text("Hello ");
+    			t0 = text("Hello Everyone! I am ");
     			t1 = text(/*name*/ ctx[0]);
-    			t2 = text("!");
+    			t2 = text(".");
     			t3 = space();
-    			p = element("p");
-    			t4 = text("Visit the ");
-    			a = element("a");
-    			a.textContent = "Svelte tutorial";
-    			t6 = text(" to learn how to build Svelte apps.");
-    			t7 = space();
-    			create_component(tensorflow.$$.fragment);
+    			p0 = element("p");
+    			p0.textContent = "I created this app using Svelte, Tensorflow and mobilenet model of tensorflow.";
+    			t5 = space();
+    			p1 = element("p");
+    			p1.textContent = "Please select an image and watch the model predict what kind of an animal it is.";
     			attr_dev(h1, "class", "svelte-1tky8bj");
-    			add_location(h1, file, 7, 1, 105);
-    			attr_dev(a, "href", "https://svelte.dev/tutorial");
-    			add_location(a, file, 8, 14, 142);
-    			add_location(p, file, 8, 1, 129);
+    			add_location(h1, file$1, 7, 1, 105);
+    			add_location(p0, file$1, 8, 1, 144);
+    			add_location(p1, file$1, 9, 1, 231);
     			attr_dev(main, "class", "svelte-1tky8bj");
-    			add_location(main, file, 6, 0, 97);
+    			add_location(main, file$1, 6, 0, 97);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -96846,35 +97300,23 @@ return a / b;`;
     			append_dev(h1, t1);
     			append_dev(h1, t2);
     			append_dev(main, t3);
-    			append_dev(main, p);
-    			append_dev(p, t4);
-    			append_dev(p, a);
-    			append_dev(p, t6);
-    			append_dev(main, t7);
-    			mount_component(tensorflow, main, null);
-    			current = true;
+    			append_dev(main, p0);
+    			append_dev(main, t5);
+    			append_dev(main, p1);
     		},
     		p: function update(ctx, [dirty]) {
-    			if (!current || dirty & /*name*/ 1) set_data_dev(t1, /*name*/ ctx[0]);
+    			if (dirty & /*name*/ 1) set_data_dev(t1, /*name*/ ctx[0]);
     		},
-    		i: function intro(local) {
-    			if (current) return;
-    			transition_in(tensorflow.$$.fragment, local);
-    			current = true;
-    		},
-    		o: function outro(local) {
-    			transition_out(tensorflow.$$.fragment, local);
-    			current = false;
-    		},
+    		i: noop,
+    		o: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(main);
-    			destroy_component(tensorflow);
     		}
     	};
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_fragment.name,
+    		id: create_fragment$1.name,
     		type: "component",
     		source: "",
     		ctx
@@ -96883,7 +97325,7 @@ return a / b;`;
     	return block;
     }
 
-    function instance($$self, $$props, $$invalidate) {
+    function instance$1($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('App', slots, []);
     	let { name } = $$props;
@@ -96913,13 +97355,13 @@ return a / b;`;
     class App extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance, create_fragment, safe_not_equal, { name: 0 });
+    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { name: 0 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "App",
     			options,
-    			id: create_fragment.name
+    			id: create_fragment$1.name
     		});
 
     		const { ctx } = this.$$;
@@ -96939,14 +97381,313 @@ return a / b;`;
     	}
     }
 
+    /**
+        * @license
+        * Copyright 2021 Google LLC. All Rights Reserved.
+        * Licensed under the Apache License, Version 2.0 (the "License");
+        * you may not use this file except in compliance with the License.
+        * You may obtain a copy of the License at
+        *
+        * http://www.apache.org/licenses/LICENSE-2.0
+        *
+        * Unless required by applicable law or agreed to in writing, software
+        * distributed under the License is distributed on an "AS IS" BASIS,
+        * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        * See the License for the specific language governing permissions and
+        * limitations under the License.
+        * =============================================================================
+        */
+    function __awaiter(e,a,r,o){return new(r||(r=Promise))(function(i,t){function n(e){try{s(o.next(e));}catch(e){t(e);}}function l(e){try{s(o.throw(e));}catch(e){t(e);}}function s(e){e.done?i(e.value):new r(function(a){a(e.value);}).then(n,l);}s((o=o.apply(e,a||[])).next());})}function __generator(e,a){var r,o,i,t,n={label:0,sent:function(){if(1&i[0])throw i[1];return i[1]},trys:[],ops:[]};return t={next:l(0),throw:l(1),return:l(2)},"function"==typeof Symbol&&(t[Symbol.iterator]=function(){return this}),t;function l(t){return function(l){return function(t){if(r)throw new TypeError("Generator is already executing.");for(;n;)try{if(r=1,o&&(i=2&t[0]?o.return:t[0]?o.throw||((i=o.return)&&i.call(o),0):o.next)&&!(i=i.call(o,t[1])).done)return i;switch(o=0,i&&(t=[2&t[0],i.value]),t[0]){case 0:case 1:i=t;break;case 4:return n.label++,{value:t[1],done:!1};case 5:n.label++,o=t[1],t=[0];continue;case 7:t=n.ops.pop(),n.trys.pop();continue;default:if(!(i=(i=n.trys).length>0&&i[i.length-1])&&(6===t[0]||2===t[0])){n=0;continue}if(3===t[0]&&(!i||t[1]>i[0]&&t[1]<i[3])){n.label=t[1];break}if(6===t[0]&&n.label<i[1]){n.label=i[1],i=t;break}if(i&&n.label<i[2]){n.label=i[2],n.ops.push(t);break}i[2]&&n.ops.pop(),n.trys.pop();continue}t=a.call(e,n);}catch(e){t=[6,e],o=0;}finally{r=i=0;}if(5&t[0])throw t[1];return {value:t[0]?t[1]:void 0,done:!0}}([t,l])}}}var IMAGENET_CLASSES={0:"tench, Tinca tinca",1:"goldfish, Carassius auratus",2:"great white shark, white shark, man-eater, man-eating shark, Carcharodon carcharias",3:"tiger shark, Galeocerdo cuvieri",4:"hammerhead, hammerhead shark",5:"electric ray, crampfish, numbfish, torpedo",6:"stingray",7:"cock",8:"hen",9:"ostrich, Struthio camelus",10:"brambling, Fringilla montifringilla",11:"goldfinch, Carduelis carduelis",12:"house finch, linnet, Carpodacus mexicanus",13:"junco, snowbird",14:"indigo bunting, indigo finch, indigo bird, Passerina cyanea",15:"robin, American robin, Turdus migratorius",16:"bulbul",17:"jay",18:"magpie",19:"chickadee",20:"water ouzel, dipper",21:"kite",22:"bald eagle, American eagle, Haliaeetus leucocephalus",23:"vulture",24:"great grey owl, great gray owl, Strix nebulosa",25:"European fire salamander, Salamandra salamandra",26:"common newt, Triturus vulgaris",27:"eft",28:"spotted salamander, Ambystoma maculatum",29:"axolotl, mud puppy, Ambystoma mexicanum",30:"bullfrog, Rana catesbeiana",31:"tree frog, tree-frog",32:"tailed frog, bell toad, ribbed toad, tailed toad, Ascaphus trui",33:"loggerhead, loggerhead turtle, Caretta caretta",34:"leatherback turtle, leatherback, leathery turtle, Dermochelys coriacea",35:"mud turtle",36:"terrapin",37:"box turtle, box tortoise",38:"banded gecko",39:"common iguana, iguana, Iguana iguana",40:"American chameleon, anole, Anolis carolinensis",41:"whiptail, whiptail lizard",42:"agama",43:"frilled lizard, Chlamydosaurus kingi",44:"alligator lizard",45:"Gila monster, Heloderma suspectum",46:"green lizard, Lacerta viridis",47:"African chameleon, Chamaeleo chamaeleon",48:"Komodo dragon, Komodo lizard, dragon lizard, giant lizard, Varanus komodoensis",49:"African crocodile, Nile crocodile, Crocodylus niloticus",50:"American alligator, Alligator mississipiensis",51:"triceratops",52:"thunder snake, worm snake, Carphophis amoenus",53:"ringneck snake, ring-necked snake, ring snake",54:"hognose snake, puff adder, sand viper",55:"green snake, grass snake",56:"king snake, kingsnake",57:"garter snake, grass snake",58:"water snake",59:"vine snake",60:"night snake, Hypsiglena torquata",61:"boa constrictor, Constrictor constrictor",62:"rock python, rock snake, Python sebae",63:"Indian cobra, Naja naja",64:"green mamba",65:"sea snake",66:"horned viper, cerastes, sand viper, horned asp, Cerastes cornutus",67:"diamondback, diamondback rattlesnake, Crotalus adamanteus",68:"sidewinder, horned rattlesnake, Crotalus cerastes",69:"trilobite",70:"harvestman, daddy longlegs, Phalangium opilio",71:"scorpion",72:"black and gold garden spider, Argiope aurantia",73:"barn spider, Araneus cavaticus",74:"garden spider, Aranea diademata",75:"black widow, Latrodectus mactans",76:"tarantula",77:"wolf spider, hunting spider",78:"tick",79:"centipede",80:"black grouse",81:"ptarmigan",82:"ruffed grouse, partridge, Bonasa umbellus",83:"prairie chicken, prairie grouse, prairie fowl",84:"peacock",85:"quail",86:"partridge",87:"African grey, African gray, Psittacus erithacus",88:"macaw",89:"sulphur-crested cockatoo, Kakatoe galerita, Cacatua galerita",90:"lorikeet",91:"coucal",92:"bee eater",93:"hornbill",94:"hummingbird",95:"jacamar",96:"toucan",97:"drake",98:"red-breasted merganser, Mergus serrator",99:"goose",100:"black swan, Cygnus atratus",101:"tusker",102:"echidna, spiny anteater, anteater",103:"platypus, duckbill, duckbilled platypus, duck-billed platypus, Ornithorhynchus anatinus",104:"wallaby, brush kangaroo",105:"koala, koala bear, kangaroo bear, native bear, Phascolarctos cinereus",106:"wombat",107:"jelly fish",108:"sea anemone, anemone",109:"brain coral",110:"flatworm, platyhelminth",111:"nematode, nematode worm, roundworm",112:"conch",113:"snail",114:"slug",115:"sea slug, nudibranch",116:"chiton, coat-of-mail shell, sea cradle, polyplacophore",117:"chambered nautilus, pearly nautilus, nautilus",118:"Dungeness crab, Cancer magister",119:"rock crab, Cancer irroratus",120:"fiddler crab",121:"king crab, Alaska crab, Alaskan king crab, Alaska king crab, Paralithodes camtschatica",122:"American lobster, Northern lobster, Maine lobster, Homarus americanus",123:"spiny lobster, langouste, rock lobster, crawfish, crayfish, sea crawfish",124:"crayfish, crawfish, crawdad, crawdaddy",125:"hermit crab",126:"isopod",127:"white stork, Ciconia ciconia",128:"black stork, Ciconia nigra",129:"spoonbill",130:"flamingo",131:"little blue heron, Egretta caerulea",132:"American egret, great white heron, Egretta albus",133:"bittern",134:"crane",135:"limpkin, Aramus pictus",136:"European gallinule, Porphyrio porphyrio",137:"American coot, marsh hen, mud hen, water hen, Fulica americana",138:"bustard",139:"ruddy turnstone, Arenaria interpres",140:"red-backed sandpiper, dunlin, Erolia alpina",141:"redshank, Tringa totanus",142:"dowitcher",143:"oystercatcher, oyster catcher",144:"pelican",145:"king penguin, Aptenodytes patagonica",146:"albatross, mollymawk",147:"grey whale, gray whale, devilfish, Eschrichtius gibbosus, Eschrichtius robustus",148:"killer whale, killer, orca, grampus, sea wolf, Orcinus orca",149:"dugong, Dugong dugon",150:"sea lion",151:"Chihuahua",152:"Japanese spaniel",153:"Maltese dog, Maltese terrier, Maltese",154:"Pekinese, Pekingese, Peke",155:"Shih-Tzu",156:"Blenheim spaniel",157:"papillon",158:"toy terrier",159:"Rhodesian ridgeback",160:"Afghan hound, Afghan",161:"basset, basset hound",162:"beagle",163:"bloodhound, sleuthhound",164:"bluetick",165:"black-and-tan coonhound",166:"Walker hound, Walker foxhound",167:"English foxhound",168:"redbone",169:"borzoi, Russian wolfhound",170:"Irish wolfhound",171:"Italian greyhound",172:"whippet",173:"Ibizan hound, Ibizan Podenco",174:"Norwegian elkhound, elkhound",175:"otterhound, otter hound",176:"Saluki, gazelle hound",177:"Scottish deerhound, deerhound",178:"Weimaraner",179:"Staffordshire bullterrier, Staffordshire bull terrier",180:"American Staffordshire terrier, Staffordshire terrier, American pit bull terrier, pit bull terrier",181:"Bedlington terrier",182:"Border terrier",183:"Kerry blue terrier",184:"Irish terrier",185:"Norfolk terrier",186:"Norwich terrier",187:"Yorkshire terrier",188:"wire-haired fox terrier",189:"Lakeland terrier",190:"Sealyham terrier, Sealyham",191:"Airedale, Airedale terrier",192:"cairn, cairn terrier",193:"Australian terrier",194:"Dandie Dinmont, Dandie Dinmont terrier",195:"Boston bull, Boston terrier",196:"miniature schnauzer",197:"giant schnauzer",198:"standard schnauzer",199:"Scotch terrier, Scottish terrier, Scottie",200:"Tibetan terrier, chrysanthemum dog",201:"silky terrier, Sydney silky",202:"soft-coated wheaten terrier",203:"West Highland white terrier",204:"Lhasa, Lhasa apso",205:"flat-coated retriever",206:"curly-coated retriever",207:"golden retriever",208:"Labrador retriever",209:"Chesapeake Bay retriever",210:"German short-haired pointer",211:"vizsla, Hungarian pointer",212:"English setter",213:"Irish setter, red setter",214:"Gordon setter",215:"Brittany spaniel",216:"clumber, clumber spaniel",217:"English springer, English springer spaniel",218:"Welsh springer spaniel",219:"cocker spaniel, English cocker spaniel, cocker",220:"Sussex spaniel",221:"Irish water spaniel",222:"kuvasz",223:"schipperke",224:"groenendael",225:"malinois",226:"briard",227:"kelpie",228:"komondor",229:"Old English sheepdog, bobtail",230:"Shetland sheepdog, Shetland sheep dog, Shetland",231:"collie",232:"Border collie",233:"Bouvier des Flandres, Bouviers des Flandres",234:"Rottweiler",235:"German shepherd, German shepherd dog, German police dog, alsatian",236:"Doberman, Doberman pinscher",237:"miniature pinscher",238:"Greater Swiss Mountain dog",239:"Bernese mountain dog",240:"Appenzeller",241:"EntleBucher",242:"boxer",243:"bull mastiff",244:"Tibetan mastiff",245:"French bulldog",246:"Great Dane",247:"Saint Bernard, St Bernard",248:"Eskimo dog, husky",249:"malamute, malemute, Alaskan malamute",250:"Siberian husky",251:"dalmatian, coach dog, carriage dog",252:"affenpinscher, monkey pinscher, monkey dog",253:"basenji",254:"pug, pug-dog",255:"Leonberg",256:"Newfoundland, Newfoundland dog",257:"Great Pyrenees",258:"Samoyed, Samoyede",259:"Pomeranian",260:"chow, chow chow",261:"keeshond",262:"Brabancon griffon",263:"Pembroke, Pembroke Welsh corgi",264:"Cardigan, Cardigan Welsh corgi",265:"toy poodle",266:"miniature poodle",267:"standard poodle",268:"Mexican hairless",269:"timber wolf, grey wolf, gray wolf, Canis lupus",270:"white wolf, Arctic wolf, Canis lupus tundrarum",271:"red wolf, maned wolf, Canis rufus, Canis niger",272:"coyote, prairie wolf, brush wolf, Canis latrans",273:"dingo, warrigal, warragal, Canis dingo",274:"dhole, Cuon alpinus",275:"African hunting dog, hyena dog, Cape hunting dog, Lycaon pictus",276:"hyena, hyaena",277:"red fox, Vulpes vulpes",278:"kit fox, Vulpes macrotis",279:"Arctic fox, white fox, Alopex lagopus",280:"grey fox, gray fox, Urocyon cinereoargenteus",281:"tabby, tabby cat",282:"tiger cat",283:"Persian cat",284:"Siamese cat, Siamese",285:"Egyptian cat",286:"cougar, puma, catamount, mountain lion, painter, panther, Felis concolor",287:"lynx, catamount",288:"leopard, Panthera pardus",289:"snow leopard, ounce, Panthera uncia",290:"jaguar, panther, Panthera onca, Felis onca",291:"lion, king of beasts, Panthera leo",292:"tiger, Panthera tigris",293:"cheetah, chetah, Acinonyx jubatus",294:"brown bear, bruin, Ursus arctos",295:"American black bear, black bear, Ursus americanus, Euarctos americanus",296:"ice bear, polar bear, Ursus Maritimus, Thalarctos maritimus",297:"sloth bear, Melursus ursinus, Ursus ursinus",298:"mongoose",299:"meerkat, mierkat",300:"tiger beetle",301:"ladybug, ladybeetle, lady beetle, ladybird, ladybird beetle",302:"ground beetle, carabid beetle",303:"long-horned beetle, longicorn, longicorn beetle",304:"leaf beetle, chrysomelid",305:"dung beetle",306:"rhinoceros beetle",307:"weevil",308:"fly",309:"bee",310:"ant, emmet, pismire",311:"grasshopper, hopper",312:"cricket",313:"walking stick, walkingstick, stick insect",314:"cockroach, roach",315:"mantis, mantid",316:"cicada, cicala",317:"leafhopper",318:"lacewing, lacewing fly",319:"dragonfly, darning needle, devil's darning needle, sewing needle, snake feeder, snake doctor, mosquito hawk, skeeter hawk",320:"damselfly",321:"admiral",322:"ringlet, ringlet butterfly",323:"monarch, monarch butterfly, milkweed butterfly, Danaus plexippus",324:"cabbage butterfly",325:"sulphur butterfly, sulfur butterfly",326:"lycaenid, lycaenid butterfly",327:"starfish, sea star",328:"sea urchin",329:"sea cucumber, holothurian",330:"wood rabbit, cottontail, cottontail rabbit",331:"hare",332:"Angora, Angora rabbit",333:"hamster",334:"porcupine, hedgehog",335:"fox squirrel, eastern fox squirrel, Sciurus niger",336:"marmot",337:"beaver",338:"guinea pig, Cavia cobaya",339:"sorrel",340:"zebra",341:"hog, pig, grunter, squealer, Sus scrofa",342:"wild boar, boar, Sus scrofa",343:"warthog",344:"hippopotamus, hippo, river horse, Hippopotamus amphibius",345:"ox",346:"water buffalo, water ox, Asiatic buffalo, Bubalus bubalis",347:"bison",348:"ram, tup",349:"bighorn, bighorn sheep, cimarron, Rocky Mountain bighorn, Rocky Mountain sheep, Ovis canadensis",350:"ibex, Capra ibex",351:"hartebeest",352:"impala, Aepyceros melampus",353:"gazelle",354:"Arabian camel, dromedary, Camelus dromedarius",355:"llama",356:"weasel",357:"mink",358:"polecat, fitch, foulmart, foumart, Mustela putorius",359:"black-footed ferret, ferret, Mustela nigripes",360:"otter",361:"skunk, polecat, wood pussy",362:"badger",363:"armadillo",364:"three-toed sloth, ai, Bradypus tridactylus",365:"orangutan, orang, orangutang, Pongo pygmaeus",366:"gorilla, Gorilla gorilla",367:"chimpanzee, chimp, Pan troglodytes",368:"gibbon, Hylobates lar",369:"siamang, Hylobates syndactylus, Symphalangus syndactylus",370:"guenon, guenon monkey",371:"patas, hussar monkey, Erythrocebus patas",372:"baboon",373:"macaque",374:"langur",375:"colobus, colobus monkey",376:"proboscis monkey, Nasalis larvatus",377:"marmoset",378:"capuchin, ringtail, Cebus capucinus",379:"howler monkey, howler",380:"titi, titi monkey",381:"spider monkey, Ateles geoffroyi",382:"squirrel monkey, Saimiri sciureus",383:"Madagascar cat, ring-tailed lemur, Lemur catta",384:"indri, indris, Indri indri, Indri brevicaudatus",385:"Indian elephant, Elephas maximus",386:"African elephant, Loxodonta africana",387:"lesser panda, red panda, panda, bear cat, cat bear, Ailurus fulgens",388:"giant panda, panda, panda bear, coon bear, Ailuropoda melanoleuca",389:"barracouta, snoek",390:"eel",391:"coho, cohoe, coho salmon, blue jack, silver salmon, Oncorhynchus kisutch",392:"rock beauty, Holocanthus tricolor",393:"anemone fish",394:"sturgeon",395:"gar, garfish, garpike, billfish, Lepisosteus osseus",396:"lionfish",397:"puffer, pufferfish, blowfish, globefish",398:"abacus",399:"abaya",400:"academic gown, academic robe, judge's robe",401:"accordion, piano accordion, squeeze box",402:"acoustic guitar",403:"aircraft carrier, carrier, flattop, attack aircraft carrier",404:"airliner",405:"airship, dirigible",406:"altar",407:"ambulance",408:"amphibian, amphibious vehicle",409:"analog clock",410:"apiary, bee house",411:"apron",412:"ashcan, trash can, garbage can, wastebin, ash bin, ash-bin, ashbin, dustbin, trash barrel, trash bin",413:"assault rifle, assault gun",414:"backpack, back pack, knapsack, packsack, rucksack, haversack",415:"bakery, bakeshop, bakehouse",416:"balance beam, beam",417:"balloon",418:"ballpoint, ballpoint pen, ballpen, Biro",419:"Band Aid",420:"banjo",421:"bannister, banister, balustrade, balusters, handrail",422:"barbell",423:"barber chair",424:"barbershop",425:"barn",426:"barometer",427:"barrel, cask",428:"barrow, garden cart, lawn cart, wheelbarrow",429:"baseball",430:"basketball",431:"bassinet",432:"bassoon",433:"bathing cap, swimming cap",434:"bath towel",435:"bathtub, bathing tub, bath, tub",436:"beach wagon, station wagon, wagon, estate car, beach waggon, station waggon, waggon",437:"beacon, lighthouse, beacon light, pharos",438:"beaker",439:"bearskin, busby, shako",440:"beer bottle",441:"beer glass",442:"bell cote, bell cot",443:"bib",444:"bicycle-built-for-two, tandem bicycle, tandem",445:"bikini, two-piece",446:"binder, ring-binder",447:"binoculars, field glasses, opera glasses",448:"birdhouse",449:"boathouse",450:"bobsled, bobsleigh, bob",451:"bolo tie, bolo, bola tie, bola",452:"bonnet, poke bonnet",453:"bookcase",454:"bookshop, bookstore, bookstall",455:"bottlecap",456:"bow",457:"bow tie, bow-tie, bowtie",458:"brass, memorial tablet, plaque",459:"brassiere, bra, bandeau",460:"breakwater, groin, groyne, mole, bulwark, seawall, jetty",461:"breastplate, aegis, egis",462:"broom",463:"bucket, pail",464:"buckle",465:"bulletproof vest",466:"bullet train, bullet",467:"butcher shop, meat market",468:"cab, hack, taxi, taxicab",469:"caldron, cauldron",470:"candle, taper, wax light",471:"cannon",472:"canoe",473:"can opener, tin opener",474:"cardigan",475:"car mirror",476:"carousel, carrousel, merry-go-round, roundabout, whirligig",477:"carpenter's kit, tool kit",478:"carton",479:"car wheel",480:"cash machine, cash dispenser, automated teller machine, automatic teller machine, automated teller, automatic teller, ATM",481:"cassette",482:"cassette player",483:"castle",484:"catamaran",485:"CD player",486:"cello, violoncello",487:"cellular telephone, cellular phone, cellphone, cell, mobile phone",488:"chain",489:"chainlink fence",490:"chain mail, ring mail, mail, chain armor, chain armour, ring armor, ring armour",491:"chain saw, chainsaw",492:"chest",493:"chiffonier, commode",494:"chime, bell, gong",495:"china cabinet, china closet",496:"Christmas stocking",497:"church, church building",498:"cinema, movie theater, movie theatre, movie house, picture palace",499:"cleaver, meat cleaver, chopper",500:"cliff dwelling",501:"cloak",502:"clog, geta, patten, sabot",503:"cocktail shaker",504:"coffee mug",505:"coffeepot",506:"coil, spiral, volute, whorl, helix",507:"combination lock",508:"computer keyboard, keypad",509:"confectionery, confectionary, candy store",510:"container ship, containership, container vessel",511:"convertible",512:"corkscrew, bottle screw",513:"cornet, horn, trumpet, trump",514:"cowboy boot",515:"cowboy hat, ten-gallon hat",516:"cradle",517:"crane",518:"crash helmet",519:"crate",520:"crib, cot",521:"Crock Pot",522:"croquet ball",523:"crutch",524:"cuirass",525:"dam, dike, dyke",526:"desk",527:"desktop computer",528:"dial telephone, dial phone",529:"diaper, nappy, napkin",530:"digital clock",531:"digital watch",532:"dining table, board",533:"dishrag, dishcloth",534:"dishwasher, dish washer, dishwashing machine",535:"disk brake, disc brake",536:"dock, dockage, docking facility",537:"dogsled, dog sled, dog sleigh",538:"dome",539:"doormat, welcome mat",540:"drilling platform, offshore rig",541:"drum, membranophone, tympan",542:"drumstick",543:"dumbbell",544:"Dutch oven",545:"electric fan, blower",546:"electric guitar",547:"electric locomotive",548:"entertainment center",549:"envelope",550:"espresso maker",551:"face powder",552:"feather boa, boa",553:"file, file cabinet, filing cabinet",554:"fireboat",555:"fire engine, fire truck",556:"fire screen, fireguard",557:"flagpole, flagstaff",558:"flute, transverse flute",559:"folding chair",560:"football helmet",561:"forklift",562:"fountain",563:"fountain pen",564:"four-poster",565:"freight car",566:"French horn, horn",567:"frying pan, frypan, skillet",568:"fur coat",569:"garbage truck, dustcart",570:"gasmask, respirator, gas helmet",571:"gas pump, gasoline pump, petrol pump, island dispenser",572:"goblet",573:"go-kart",574:"golf ball",575:"golfcart, golf cart",576:"gondola",577:"gong, tam-tam",578:"gown",579:"grand piano, grand",580:"greenhouse, nursery, glasshouse",581:"grille, radiator grille",582:"grocery store, grocery, food market, market",583:"guillotine",584:"hair slide",585:"hair spray",586:"half track",587:"hammer",588:"hamper",589:"hand blower, blow dryer, blow drier, hair dryer, hair drier",590:"hand-held computer, hand-held microcomputer",591:"handkerchief, hankie, hanky, hankey",592:"hard disc, hard disk, fixed disk",593:"harmonica, mouth organ, harp, mouth harp",594:"harp",595:"harvester, reaper",596:"hatchet",597:"holster",598:"home theater, home theatre",599:"honeycomb",600:"hook, claw",601:"hoopskirt, crinoline",602:"horizontal bar, high bar",603:"horse cart, horse-cart",604:"hourglass",605:"iPod",606:"iron, smoothing iron",607:"jack-o'-lantern",608:"jean, blue jean, denim",609:"jeep, landrover",610:"jersey, T-shirt, tee shirt",611:"jigsaw puzzle",612:"jinrikisha, ricksha, rickshaw",613:"joystick",614:"kimono",615:"knee pad",616:"knot",617:"lab coat, laboratory coat",618:"ladle",619:"lampshade, lamp shade",620:"laptop, laptop computer",621:"lawn mower, mower",622:"lens cap, lens cover",623:"letter opener, paper knife, paperknife",624:"library",625:"lifeboat",626:"lighter, light, igniter, ignitor",627:"limousine, limo",628:"liner, ocean liner",629:"lipstick, lip rouge",630:"Loafer",631:"lotion",632:"loudspeaker, speaker, speaker unit, loudspeaker system, speaker system",633:"loupe, jeweler's loupe",634:"lumbermill, sawmill",635:"magnetic compass",636:"mailbag, postbag",637:"mailbox, letter box",638:"maillot",639:"maillot, tank suit",640:"manhole cover",641:"maraca",642:"marimba, xylophone",643:"mask",644:"matchstick",645:"maypole",646:"maze, labyrinth",647:"measuring cup",648:"medicine chest, medicine cabinet",649:"megalith, megalithic structure",650:"microphone, mike",651:"microwave, microwave oven",652:"military uniform",653:"milk can",654:"minibus",655:"miniskirt, mini",656:"minivan",657:"missile",658:"mitten",659:"mixing bowl",660:"mobile home, manufactured home",661:"Model T",662:"modem",663:"monastery",664:"monitor",665:"moped",666:"mortar",667:"mortarboard",668:"mosque",669:"mosquito net",670:"motor scooter, scooter",671:"mountain bike, all-terrain bike, off-roader",672:"mountain tent",673:"mouse, computer mouse",674:"mousetrap",675:"moving van",676:"muzzle",677:"nail",678:"neck brace",679:"necklace",680:"nipple",681:"notebook, notebook computer",682:"obelisk",683:"oboe, hautboy, hautbois",684:"ocarina, sweet potato",685:"odometer, hodometer, mileometer, milometer",686:"oil filter",687:"organ, pipe organ",688:"oscilloscope, scope, cathode-ray oscilloscope, CRO",689:"overskirt",690:"oxcart",691:"oxygen mask",692:"packet",693:"paddle, boat paddle",694:"paddlewheel, paddle wheel",695:"padlock",696:"paintbrush",697:"pajama, pyjama, pj's, jammies",698:"palace",699:"panpipe, pandean pipe, syrinx",700:"paper towel",701:"parachute, chute",702:"parallel bars, bars",703:"park bench",704:"parking meter",705:"passenger car, coach, carriage",706:"patio, terrace",707:"pay-phone, pay-station",708:"pedestal, plinth, footstall",709:"pencil box, pencil case",710:"pencil sharpener",711:"perfume, essence",712:"Petri dish",713:"photocopier",714:"pick, plectrum, plectron",715:"pickelhaube",716:"picket fence, paling",717:"pickup, pickup truck",718:"pier",719:"piggy bank, penny bank",720:"pill bottle",721:"pillow",722:"ping-pong ball",723:"pinwheel",724:"pirate, pirate ship",725:"pitcher, ewer",726:"plane, carpenter's plane, woodworking plane",727:"planetarium",728:"plastic bag",729:"plate rack",730:"plow, plough",731:"plunger, plumber's helper",732:"Polaroid camera, Polaroid Land camera",733:"pole",734:"police van, police wagon, paddy wagon, patrol wagon, wagon, black Maria",735:"poncho",736:"pool table, billiard table, snooker table",737:"pop bottle, soda bottle",738:"pot, flowerpot",739:"potter's wheel",740:"power drill",741:"prayer rug, prayer mat",742:"printer",743:"prison, prison house",744:"projectile, missile",745:"projector",746:"puck, hockey puck",747:"punching bag, punch bag, punching ball, punchball",748:"purse",749:"quill, quill pen",750:"quilt, comforter, comfort, puff",751:"racer, race car, racing car",752:"racket, racquet",753:"radiator",754:"radio, wireless",755:"radio telescope, radio reflector",756:"rain barrel",757:"recreational vehicle, RV, R.V.",758:"reel",759:"reflex camera",760:"refrigerator, icebox",761:"remote control, remote",762:"restaurant, eating house, eating place, eatery",763:"revolver, six-gun, six-shooter",764:"rifle",765:"rocking chair, rocker",766:"rotisserie",767:"rubber eraser, rubber, pencil eraser",768:"rugby ball",769:"rule, ruler",770:"running shoe",771:"safe",772:"safety pin",773:"saltshaker, salt shaker",774:"sandal",775:"sarong",776:"sax, saxophone",777:"scabbard",778:"scale, weighing machine",779:"school bus",780:"schooner",781:"scoreboard",782:"screen, CRT screen",783:"screw",784:"screwdriver",785:"seat belt, seatbelt",786:"sewing machine",787:"shield, buckler",788:"shoe shop, shoe-shop, shoe store",789:"shoji",790:"shopping basket",791:"shopping cart",792:"shovel",793:"shower cap",794:"shower curtain",795:"ski",796:"ski mask",797:"sleeping bag",798:"slide rule, slipstick",799:"sliding door",800:"slot, one-armed bandit",801:"snorkel",802:"snowmobile",803:"snowplow, snowplough",804:"soap dispenser",805:"soccer ball",806:"sock",807:"solar dish, solar collector, solar furnace",808:"sombrero",809:"soup bowl",810:"space bar",811:"space heater",812:"space shuttle",813:"spatula",814:"speedboat",815:"spider web, spider's web",816:"spindle",817:"sports car, sport car",818:"spotlight, spot",819:"stage",820:"steam locomotive",821:"steel arch bridge",822:"steel drum",823:"stethoscope",824:"stole",825:"stone wall",826:"stopwatch, stop watch",827:"stove",828:"strainer",829:"streetcar, tram, tramcar, trolley, trolley car",830:"stretcher",831:"studio couch, day bed",832:"stupa, tope",833:"submarine, pigboat, sub, U-boat",834:"suit, suit of clothes",835:"sundial",836:"sunglass",837:"sunglasses, dark glasses, shades",838:"sunscreen, sunblock, sun blocker",839:"suspension bridge",840:"swab, swob, mop",841:"sweatshirt",842:"swimming trunks, bathing trunks",843:"swing",844:"switch, electric switch, electrical switch",845:"syringe",846:"table lamp",847:"tank, army tank, armored combat vehicle, armoured combat vehicle",848:"tape player",849:"teapot",850:"teddy, teddy bear",851:"television, television system",852:"tennis ball",853:"thatch, thatched roof",854:"theater curtain, theatre curtain",855:"thimble",856:"thresher, thrasher, threshing machine",857:"throne",858:"tile roof",859:"toaster",860:"tobacco shop, tobacconist shop, tobacconist",861:"toilet seat",862:"torch",863:"totem pole",864:"tow truck, tow car, wrecker",865:"toyshop",866:"tractor",867:"trailer truck, tractor trailer, trucking rig, rig, articulated lorry, semi",868:"tray",869:"trench coat",870:"tricycle, trike, velocipede",871:"trimaran",872:"tripod",873:"triumphal arch",874:"trolleybus, trolley coach, trackless trolley",875:"trombone",876:"tub, vat",877:"turnstile",878:"typewriter keyboard",879:"umbrella",880:"unicycle, monocycle",881:"upright, upright piano",882:"vacuum, vacuum cleaner",883:"vase",884:"vault",885:"velvet",886:"vending machine",887:"vestment",888:"viaduct",889:"violin, fiddle",890:"volleyball",891:"waffle iron",892:"wall clock",893:"wallet, billfold, notecase, pocketbook",894:"wardrobe, closet, press",895:"warplane, military plane",896:"washbasin, handbasin, washbowl, lavabo, wash-hand basin",897:"washer, automatic washer, washing machine",898:"water bottle",899:"water jug",900:"water tower",901:"whiskey jug",902:"whistle",903:"wig",904:"window screen",905:"window shade",906:"Windsor tie",907:"wine bottle",908:"wing",909:"wok",910:"wooden spoon",911:"wool, woolen, woollen",912:"worm fence, snake fence, snake-rail fence, Virginia fence",913:"wreck",914:"yawl",915:"yurt",916:"web site, website, internet site, site",917:"comic book",918:"crossword puzzle, crossword",919:"street sign",920:"traffic light, traffic signal, stoplight",921:"book jacket, dust cover, dust jacket, dust wrapper",922:"menu",923:"plate",924:"guacamole",925:"consomme",926:"hot pot, hotpot",927:"trifle",928:"ice cream, icecream",929:"ice lolly, lolly, lollipop, popsicle",930:"French loaf",931:"bagel, beigel",932:"pretzel",933:"cheeseburger",934:"hotdog, hot dog, red hot",935:"mashed potato",936:"head cabbage",937:"broccoli",938:"cauliflower",939:"zucchini, courgette",940:"spaghetti squash",941:"acorn squash",942:"butternut squash",943:"cucumber, cuke",944:"artichoke, globe artichoke",945:"bell pepper",946:"cardoon",947:"mushroom",948:"Granny Smith",949:"strawberry",950:"orange",951:"lemon",952:"fig",953:"pineapple, ananas",954:"banana",955:"jackfruit, jak, jack",956:"custard apple",957:"pomegranate",958:"hay",959:"carbonara",960:"chocolate sauce, chocolate syrup",961:"dough",962:"meat loaf, meatloaf",963:"pizza, pizza pie",964:"potpie",965:"burrito",966:"red wine",967:"espresso",968:"cup",969:"eggnog",970:"alp",971:"bubble",972:"cliff, drop, drop-off",973:"coral reef",974:"geyser",975:"lakeside, lakeshore",976:"promontory, headland, head, foreland",977:"sandbar, sand bar",978:"seashore, coast, seacoast, sea-coast",979:"valley, vale",980:"volcano",981:"ballplayer, baseball player",982:"groom, bridegroom",983:"scuba diver",984:"rapeseed",985:"daisy",986:"yellow lady's slipper, yellow lady-slipper, Cypripedium calceolus, Cypripedium parviflorum",987:"corn",988:"acorn",989:"hip, rose hip, rosehip",990:"buckeye, horse chestnut, conker",991:"coral fungus",992:"agaric",993:"gyromitra",994:"stinkhorn, carrion fungus",995:"earthstar",996:"hen-of-the-woods, hen of the woods, Polyporus frondosus, Grifola frondosa",997:"bolete",998:"ear, spike, capitulum",999:"toilet tissue, toilet paper, bathroom tissue"},version="2.1.0",IMAGE_SIZE=224,EMBEDDING_NODES={"1.00":"module_apply_default/MobilenetV1/Logits/global_pool","2.00":"module_apply_default/MobilenetV2/Logits/AvgPool"},MODEL_INFO={"1.00":{.25:{url:"https://tfhub.dev/google/imagenet/mobilenet_v1_025_224/classification/1",inputRange:[0,1]},"0.50":{url:"https://tfhub.dev/google/imagenet/mobilenet_v1_050_224/classification/1",inputRange:[0,1]},.75:{url:"https://tfhub.dev/google/imagenet/mobilenet_v1_075_224/classification/1",inputRange:[0,1]},"1.00":{url:"https://tfhub.dev/google/imagenet/mobilenet_v1_100_224/classification/1",inputRange:[0,1]}},"2.00":{"0.50":{url:"https://tfhub.dev/google/imagenet/mobilenet_v2_050_224/classification/2",inputRange:[0,1]},.75:{url:"https://tfhub.dev/google/imagenet/mobilenet_v2_075_224/classification/2",inputRange:[0,1]},"1.00":{url:"https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/classification/2",inputRange:[0,1]}}};function load(e){return void 0===e&&(e={version:1,alpha:1}),__awaiter(this,void 0,void 0,function(){var a,r,o,i,t,n,l;return __generator(this,function(s){switch(s.label){case 0:if(null==tf$1)throw new Error("Cannot find TensorFlow.js. If you are using a <script> tag, please also include @tensorflow/tfjs on the page before using this model.");if(o=e.version.toFixed(2),i=e.alpha?e.alpha.toFixed(2):"",t=-1,n=1,null==e.modelUrl){if(!(o in MODEL_INFO))throw new Error("Invalid version of MobileNet. Valid versions are: "+Object.keys(MODEL_INFO));if(!(i in MODEL_INFO[o]))throw new Error("MobileNet constructed with invalid alpha "+e.alpha+". Valid multipliers for this version are: "+Object.keys(MODEL_INFO[o])+".");a=MODEL_INFO[o][i].inputRange,t=a[0],n=a[1];}return null!=e.inputRange&&(r=e.inputRange,t=r[0],n=r[1]),[4,(l=new MobileNetImpl(o,i,e.modelUrl,t,n)).load()];case 1:return s.sent(),[2,l]}})})}var MobileNetImpl=function(){function e(e,a,r,o,i){void 0===o&&(o=-1),void 0===i&&(i=1),this.version=e,this.alpha=a,this.modelUrl=r,this.inputMin=o,this.inputMax=i,this.normalizationConstant=(i-o)/255;}return e.prototype.load=function(){return __awaiter(this,void 0,void 0,function(){var e,a,r,o,i=this;return __generator(this,function(t){switch(t.label){case 0:return this.modelUrl?(e=this,[4,loadGraphModel(this.modelUrl)]):[3,2];case 1:return e.model=t.sent(),[3,4];case 2:return a=MODEL_INFO[this.version][this.alpha].url,r=this,[4,loadGraphModel(a,{fromTFHub:!0})];case 3:r.model=t.sent(),t.label=4;case 4:return [4,(o=tidy(function(){return i.model.predict(zeros$2([1,IMAGE_SIZE,IMAGE_SIZE,3]))})).data()];case 5:return t.sent(),o.dispose(),[2]}})})},e.prototype.infer=function(e,a){var r=this;return void 0===a&&(a=!1),tidy(function(){e instanceof Tensor||(e=fromPixels$1(e));var o=add$2(mul(cast$3(e,"float32"),r.normalizationConstant),r.inputMin),i=o;if(e.shape[0]!==IMAGE_SIZE||e.shape[1]!==IMAGE_SIZE){i=image$1.resizeBilinear(o,[IMAGE_SIZE,IMAGE_SIZE],!0);}var t,n=reshape$3(i,[-1,IMAGE_SIZE,IMAGE_SIZE,3]);if(a){var l=EMBEDDING_NODES[r.version],s=r.model.execute(n,l);t=squeeze(s,[1,2]);}else {var c=r.model.predict(n);t=slice$2(c,[0,1],[-1,1e3]);}return t})},e.prototype.classify=function(e,a){return void 0===a&&(a=3),__awaiter(this,void 0,void 0,function(){var r,o;return __generator(this,function(i){switch(i.label){case 0:return [4,getTopKClasses(r=this.infer(e),a)];case 1:return o=i.sent(),r.dispose(),[2,o]}})})},e}();function getTopKClasses(e,a){return __awaiter(this,void 0,void 0,function(){var r,o,i,t,n,l,s;return __generator(this,function(c){switch(c.label){case 0:return [4,(r=softmax$3(e)).data()];case 1:for(o=c.sent(),r.dispose(),i=[],s=0;s<o.length;s++)i.push({value:o[s],index:s});for(i.sort(function(e,a){return a.value-e.value}),t=new Float32Array(a),n=new Int32Array(a),s=0;s<a;s++)t[s]=i[s].value,n[s]=i[s].index;for(l=[],s=0;s<n.length;s++)l.push({className:IMAGENET_CLASSES[n[s]],probability:t[s]});return [2,l]}})})}
+
+    var mobilenet = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        load: load,
+        version: version
+    });
+
+    /* src/Components/ImageClassification/imageClassify.svelte generated by Svelte v3.44.3 */
+
+    const { console: console_1 } = globals;
+    const file = "src/Components/ImageClassification/imageClassify.svelte";
+
+    function get_each_context(ctx, list, i) {
+    	const child_ctx = ctx.slice();
+    	child_ctx[8] = list[i];
+    	return child_ctx;
+    }
+
+    // (55:8) {#each predictions as prediction}
+    function create_each_block(ctx) {
+    	let div;
+    	let h1;
+    	let t1;
+    	let p0;
+    	let t2;
+    	let t3_value = /*prediction*/ ctx[8].className + "";
+    	let t3;
+    	let t4;
+    	let p1;
+    	let t5;
+    	let t6_value = /*prediction*/ ctx[8].probability + "";
+    	let t6;
+    	let t7;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			h1 = element("h1");
+    			h1.textContent = "Predictions";
+    			t1 = space();
+    			p0 = element("p");
+    			t2 = text("Classname: ");
+    			t3 = text(t3_value);
+    			t4 = space();
+    			p1 = element("p");
+    			t5 = text("Probability: ");
+    			t6 = text(t6_value);
+    			t7 = space();
+    			add_location(h1, file, 56, 12, 1657);
+    			add_location(p0, file, 57, 8, 1686);
+    			add_location(p1, file, 58, 8, 1735);
+    			add_location(div, file, 55, 8, 1639);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    			append_dev(div, h1);
+    			append_dev(div, t1);
+    			append_dev(div, p0);
+    			append_dev(p0, t2);
+    			append_dev(p0, t3);
+    			append_dev(div, t4);
+    			append_dev(div, p1);
+    			append_dev(p1, t5);
+    			append_dev(p1, t6);
+    			append_dev(div, t7);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*predictions*/ 1 && t3_value !== (t3_value = /*prediction*/ ctx[8].className + "")) set_data_dev(t3, t3_value);
+    			if (dirty & /*predictions*/ 1 && t6_value !== (t6_value = /*prediction*/ ctx[8].probability + "")) set_data_dev(t6, t6_value);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_each_block.name,
+    		type: "each",
+    		source: "(55:8) {#each predictions as prediction}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function create_fragment(ctx) {
+    	let section;
+    	let input;
+    	let t0;
+    	let div1;
+    	let div0;
+    	let t1;
+    	let mounted;
+    	let dispose;
+    	let each_value = /*predictions*/ ctx[0];
+    	validate_each_argument(each_value);
+    	let each_blocks = [];
+
+    	for (let i = 0; i < each_value.length; i += 1) {
+    		each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
+    	}
+
+    	const block = {
+    		c: function create() {
+    			section = element("section");
+    			input = element("input");
+    			t0 = space();
+    			div1 = element("div");
+    			div0 = element("div");
+    			t1 = space();
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].c();
+    			}
+
+    			attr_dev(input, "type", "file");
+    			add_location(input, file, 48, 4, 1395);
+    			attr_dev(div0, "class", "imgDiv");
+    			attr_dev(div0, "id", "imgDiv");
+    			add_location(div0, file, 51, 8, 1538);
+    			add_location(div1, file, 50, 4, 1524);
+    			attr_dev(section, "class", "svelte-jdh8tm");
+    			add_location(section, file, 47, 0, 1381);
+    		},
+    		l: function claim(nodes) {
+    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, section, anchor);
+    			append_dev(section, input);
+    			append_dev(section, t0);
+    			append_dev(section, div1);
+    			append_dev(div1, div0);
+    			append_dev(div1, t1);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].m(div1, null);
+    			}
+
+    			if (!mounted) {
+    				dispose = listen_dev(input, "change", /*imageClassify*/ ctx[1], false, false, false);
+    				mounted = true;
+    			}
+    		},
+    		p: function update(ctx, [dirty]) {
+    			if (dirty & /*predictions*/ 1) {
+    				each_value = /*predictions*/ ctx[0];
+    				validate_each_argument(each_value);
+    				let i;
+
+    				for (i = 0; i < each_value.length; i += 1) {
+    					const child_ctx = get_each_context(ctx, each_value, i);
+
+    					if (each_blocks[i]) {
+    						each_blocks[i].p(child_ctx, dirty);
+    					} else {
+    						each_blocks[i] = create_each_block(child_ctx);
+    						each_blocks[i].c();
+    						each_blocks[i].m(div1, null);
+    					}
+    				}
+
+    				for (; i < each_blocks.length; i += 1) {
+    					each_blocks[i].d(1);
+    				}
+
+    				each_blocks.length = each_value.length;
+    			}
+    		},
+    		i: noop,
+    		o: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(section);
+    			destroy_each(each_blocks, detaching);
+    			mounted = false;
+    			dispose();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_fragment.name,
+    		type: "component",
+    		source: "",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function instance($$self, $$props, $$invalidate) {
+    	let { $$slots: slots = {}, $$scope } = $$props;
+    	validate_slots('ImageClassify', slots, []);
+    	const imageSpiderman = `assets/images/fatSpiderman.jpeg`;
+    	const frost = `assets/images/frost.jpg`;
+    	const dog = `assets/images/dog.jpeg`;
+    	const me = `assets/images/sanjog.jpg`;
+    	const man = `assets/images/man.jpg`;
+    	const rabbit = `assets/images/rabbit.jpg`;
+    	let predictions = [{ className: '', probability: '' }];
+
+    	const imageClassify = async evt => {
+    		let imgTag = '';
+    		let imageDiv = '';
+    		console.log(evt);
+    		let reader = new FileReader();
+
+    		reader.onload = async res => {
+    			console.log(res.target.result);
+    			imgTag = document.createElement("img");
+    			imageDiv = document.getElementById('imgDiv');
+    			imageDiv.appendChild(imgTag);
+    			imgTag.src = res.target.result;
+    			const model = await load();
+    			$$invalidate(0, predictions = await model.classify(imgTag));
+    			console.log(`Predictions: ${JSON.stringify(predictions, undefined, 2)}`);
+    		};
+
+    		reader.readAsDataURL(evt.target.files[0]);
+    	};
+
+    	const writable_props = [];
+
+    	Object.keys($$props).forEach(key => {
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console_1.warn(`<ImageClassify> was created with unknown prop '${key}'`);
+    	});
+
+    	$$self.$capture_state = () => ({
+    		tf,
+    		mobilenet,
+    		imageSpiderman,
+    		frost,
+    		dog,
+    		me,
+    		man,
+    		rabbit,
+    		predictions,
+    		imageClassify
+    	});
+
+    	$$self.$inject_state = $$props => {
+    		if ('predictions' in $$props) $$invalidate(0, predictions = $$props.predictions);
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	return [predictions, imageClassify];
+    }
+
+    class ImageClassify extends SvelteComponentDev {
+    	constructor(options) {
+    		super(options);
+    		init(this, options, instance, create_fragment, safe_not_equal, {});
+
+    		dispatch_dev("SvelteRegisterComponent", {
+    			component: this,
+    			tagName: "ImageClassify",
+    			options,
+    			id: create_fragment.name
+    		});
+    	}
+    }
+
     const app = new App({
     	target: document.body,
     	props: {
-    		name: 'world'
+    		name: 'Sanjog Rijal'
     	}
     });
 
-    return app;
+    // const tensorflowJS = new Tensorflow__SvelteComponent_({
+    // 	target: document.body,
+    // 	props: {
+
+    // 	}
+    // });
+
+    const imageClassifyJS = new ImageClassify({
+    	target: document.body
+    });
+
+    var main = {
+    	app,
+    	imageClassifyJS
+    };
+
+    return main;
 
 })();
 //# sourceMappingURL=bundle.js.map

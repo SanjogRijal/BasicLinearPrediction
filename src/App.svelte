@@ -5,9 +5,10 @@
 </script>
 
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-	<TensorFlow/>
+	<h1>Hello Everyone! I am {name}.</h1>
+	<p>I created this app using Svelte, Tensorflow and mobilenet model of tensorflow.</p>
+	<p>Please select an image and watch the model predict what kind of an animal it is. </p>
+	
 </main>
 
 <style>

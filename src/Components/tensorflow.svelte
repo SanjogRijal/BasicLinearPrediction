@@ -26,8 +26,19 @@
     trainNewModel();
 </script>
 
+<style>
+    .tensorSection {
+        left: 40%;
+        position: relative;
+        right:0px
+    }
+</style>
+
 <section>
-    <h4>Predicted Value: {prediction}</h4>
+    <div class="tensorSection">
+        <h4>Predicted Value: {prediction}</h4>
 
     <input type="number" on:change={linearPrediction}>
+    </div>
+    
 </section>
